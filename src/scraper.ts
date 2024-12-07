@@ -63,6 +63,13 @@ import {
   TTweetv2TweetField,
   TTweetv2UserField,
 } from 'twitter-api-v2';
+import { 
+  getListsByMember,
+  getListsByUser,
+  List,
+  ListMembershipsResponse,
+  GetListMembershipsOptions, 
+   } from './lists';
 
 const twUrl = 'https://twitter.com';
 const UserTweetsUrl =
@@ -803,6 +810,42 @@ export class Scraper {
   public async followUser(userName: string): Promise<void> {
     // Call the followUser function from relationships.ts
     await followUser(userName, this.auth);
+  }
+
+   /**
+   * Fetches the specified user's public lists.
+   * @param userId The ID of the user whose lists to fetch.
+   * @param count The number of lists to fetch (default 100).
+   * @returns A promise that resolves to the user's lists.
+   */
+  public async getListsByUser(
+    userId: string,
+    count?: number,
+  ): Promise<List[]> {
+    const result = await getListsByUser(userId, count, this.auth);
+    if (!result.success) {
+      throw result.err;
+    }
+    return result.value;
+  }
+
+  /**
+   * Fetches the lists that the specified user is a member of.
+   * @param userId The ID of the user whose list memberships to fetch.
+   * @param options Optional parameters for pagination and count.
+   * @returns A promise that resolves to the user's list memberships and next cursor if available.
+   */
+  public async getListsByMember(
+    userId: string,
+    options: GetListMembershipsOptions = {},
+  ): Promise<ListMembershipsResponse> {
+    const result = await getListsByMember(userId, options, this.auth);
+    
+    if (!result.success) {
+      throw result.err;
+    }
+    
+    return result.value;
   }
 
   private getAuthOptions(): Partial<TwitterAuthOptions> {
