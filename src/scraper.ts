@@ -814,15 +814,15 @@ export class Scraper {
 
    /**
    * Fetches the specified user's public lists.
-   * @param userId The ID of the user whose lists to fetch.
+   * @param user The screen name or ID of the user whose lists to fetch.
    * @param count The number of lists to fetch (default 100).
    * @returns A promise that resolves to the user's lists.
    */
   public async getListsByUser(
-    userId: string,
+    user: string,
     count?: number,
   ): Promise<List[]> {
-    const result = await getListsByUser(userId, count, this.auth);
+    const result = await getListsByUser(user, count, this.auth);
     if (!result.success) {
       throw result.err;
     }
@@ -831,15 +831,15 @@ export class Scraper {
 
   /**
    * Fetches the lists that the specified user is a member of.
-   * @param userId The ID of the user whose list memberships to fetch.
+   * @param user The screen name or ID of the user whose list memberships to fetch.
    * @param options Optional parameters for pagination and count.
    * @returns A promise that resolves to the user's list memberships and next cursor if available.
    */
   public async getListsByMember(
-    userId: string,
+    user: string,
     options: GetListMembershipsOptions = {},
   ): Promise<ListMembershipsResponse> {
-    const result = await getListsByMember(userId, options, this.auth);
+    const result = await getListsByMember(user, options, this.auth);
     
     if (!result.success) {
       throw result.err;

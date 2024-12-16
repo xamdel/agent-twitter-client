@@ -1,6 +1,7 @@
 import { requestApi, RequestApiResult } from "./api";
 import { TwitterAuth } from "./auth";
 import { ApiError } from "./errors";
+import { resolveUserId } from "./user";
 
 export interface List {
   id: string;
@@ -31,12 +32,21 @@ export interface GetListMembershipsOptions {
 }
 
 export async function getListsByUser(
-  userId: string,
+  user: string,
   count: number = 100,
   auth: TwitterAuth,
 ): Promise<RequestApiResult<List[]>> {
+  // First resolve the user ID
+  const userIdResult = await resolveUserId(user, auth);
+  if (!userIdResult.success) {
+    return {
+      success: false,
+      err: userIdResult.err
+    };
+  }
+  
   const variables = {
-    userId,
+    userId: userIdResult.value,
     count,
   };
 
@@ -128,12 +138,21 @@ export async function getListsByUser(
 }
 
 export async function getListsByMember(
-  userId: string,
+  user: string,
   options: GetListMembershipsOptions,
   auth: TwitterAuth,
 ): Promise<RequestApiResult<{lists: List[], nextCursor?: string}>> {
+  // First resolve the user ID
+  const userIdResult = await resolveUserId(user, auth);
+  if (!userIdResult.success) {
+    return {
+      success: false,
+      err: userIdResult.err
+    };
+  }
+
   const variables = {
-    userId,
+    userId: userIdResult.value,
     count: options.count || 20,
     ...(options.cursor && { cursor: options.cursor }),
   };
